@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fantasy Football Trade Analyzer</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+
+  h1 { color: #1f2937; }
+
+  .container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    gap: 20px;
+  }
+
+  .team-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .team-card h3 { color: #2563eb; }
+
+  .player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  input {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+  }
+
+  button:hover { background: #1e40af; }
+
+  .analyze-btn { display: block; width: 250px; margin: 30px auto; font-weight: bold; }
+
+  #result {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 18px;
+    min-height: 80px;
+  }
+
+  #result img {
+    max-width: 200px;
+    margin-top: 10px;
+  }
+
+  .loss { color: red; font-size: 22px; font-weight: bold; }
+  .win { color: green; font-size: 22px; font-weight: bold; }
+
+  .autocomplete-suggestions {
+    border: 1px solid #ccc;
+    background: #fff;
+    max-height: 120px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 1000;
+    border-radius: 8px;
+  }
+
+  .autocomplete-suggestion { padding: 6px; cursor: pointer; }
+  .autocomplete-suggestion:hover { background: #f3f4f6; }
+</style>
+</head>
+<body>
+
+<h1>Earlxo's Fantasy Football Trade Analyzer</h1>
+
+<div class="container">
+  <div class="team-card">
+    <h3>My Team</h3>
+    <div id="myTeamPlayers"></div>
+    <button onclick="addPlayer('my')">+ Add Player</button>
+  </div>
+
+  <div class="team-card">
+    <h3>Opposing Team</h3>
+    <div id="opposingTeamPlayers"></div>
+    <button onclick="addPlayer('opp')">+ Add Player</button>
+  </div>
+</div>
+
+<button class="analyze-btn" onclick="analyzeTrade()">Analyze Trade</button>
+
+<div id="result"></div>
+
+<script>
+// PLAYER VALUES
+const playerValues = {
+"Bijan Robinson":99,"Ja’Marr Chase":100,"Justin Jefferson":98,"Saquon Barkley":97,"CeeDee Lamb":95,
+"Christian McCaffrey":94,"Jahmyr Gibbs":92,"Chase Brown":91,"Nico Collins":89,"Puka Nacua":88,
+"Malik Nabers":86,"Jonathan Taylor":85,"Amon-Ra St. Brown":83,"Brock Bowers":82,"Drake London":80,
+"Ladd McConkey":79,"De’Von Achane":77,"A.J. Brown":76,"Brian Thomas Jr.":74,"Bucky Irving":73,
+"Trey McBride":70,"Davante Adams":69,"Josh Jacobs":67,"Xavier Worthy":66,"Jayden Daniels":65,
+"Kyren Williams":64,"Josh Allen":63,"Lamar Jackson":62,"Marvin Harrison Jr.":61,"Sam LaPorta":60,
+"Tyreek Hill":58,"Tee Higgins":57,"Jaxon Smith-Njigba":56,"Calvin Ridley":55,"Garrett Wilson":54,
+"George Kittle":53,"Terry McLaurin":52,"Omarion Hampton":51,"TreVeyon Henderson":50,"Breece Hall":49,
+"Jalen Hurts":48,"Mike Evans":47,"Rome Odunze":46,"James Cook":45,"DK Metcalf":44,"Ja’Tavion Sanders":43,
+"Courtland Sutton":42,"George Pickens":41,"Jaylen Waddle":40,"DeVonta Smith":39,"Jameson Williams":38,
+"Ricky Pearsall":37,"Jakobi Meyers":36,"Rashee Rice":35,"Isiah Pacheco":34,"David Montgomery":33,
+"D’Andre Swift":32,"Zay Flowers":31,"Chuba Hubbard":30,"Alvin Kamara":29,"James Conner":28,
+"Jauan Jennings":27,"Emeka Egbuka":26,"Matthew Golden":25,"Kaleb Johnson":24,"Tony Pollard":23,
+"Chris Olave":22,"Joe Burrow":21,"Chris Godwin":20,"Brian Robinson Jr.":19,"RJ Harvey":18,
+"Jermaine Burton":17,"Baker Mayfield":16,"Jordan Addison":15,"Tyler Warren":14,"David Njoku":13,
+"Stefon Diggs":12,"Tyrone Tracy Jr.":11,"Josh Downs":10,"TJ Hockenson":9,"Travis Kelce":8,
+"Michael Pittman Jr.":7,"Khalil Shakir":6,"Aaron Jones":5,"Jaylen Warren":5,"Joe Mixon":4,
+"Darnell Mooney":4,"Keon Coleman":3,"Deebo Samuel Sr.":3,"Dak Prescott":3,"Justin Fields":3,
+"Patrick Mahomes":2,"Kyler Murray":2,"Bo Nix":2,"Jordan Mason":2,"J.K. Dobbins":1,"Javonte Williams":1,
+"Austin Ekeler":1,"Tucker Kraft":1
+};
+
+// AUTOCOMPLETE FUNCTION
+function autocomplete(input) {
+  let currentFocus;
+  input.addEventListener("input", function() {
+    closeAllLists();
+    if (!this.value) return false;
+    currentFocus = -1;
+    const val = this.value.toLowerCase();
+    const list = document.createElement("div");
+    list.setAttribute("class", "autocomplete-suggestions");
+    this.parentNode.appendChild(list);
+
+    Object.keys(playerValues).forEach(player => {
+      if (player.toLowerCase().includes(val)) {
+        const item = document.createElement("div");
+        item.setAttribute("class", "autocomplete-suggestion");
+        item.innerHTML = player;
+        item.addEventListener("click", function() {
+          input.value = this.innerText;
+          closeAllLists();
+        });
+        list.appendChild(item);
+      }
+    });
+  });
+
+  input.addEventListener("keydown", function(e) {
+    let x = document.querySelector(".autocomplete-suggestions");
+    if (x) x = x.getElementsByTagName("div");
+    if (e.key === "ArrowDown") { currentFocus++; addActive(x); }
+    else if (e.key === "ArrowUp") { currentFocus--; addActive(x); }
+    else if (e.key === "Enter") { e.preventDefault(); if (currentFocus > -1 && x) x[currentFocus].click(); }
+  });
+
+  function addActive(x) {
+    if (!x) return false;
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = x.length - 1;
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) { for (let i = 0; i < x.length; i++) x[i].classList.remove("autocomplete-active"); }
+  function closeAllLists(elmnt) {
+    const items = document.getElementsByClassName("autocomplete-suggestions");
+    for (let i = 0; i < items.length; i++) { if (elmnt != items[i] && elmnt != input) items[i].parentNode.removeChild(items[i]); }
+  }
+  document.addEventListener("click", function(e) { closeAllLists(e.target); });
+}
+
+// ADD PLAYER ROW
+function addPlayer(team) {
+  const container = document.getElementById(team === 'my' ? 'myTeamPlayers' : 'opposingTeamPlayers');
+  const row = document.createElement('div');
+  row.className = 'player-row';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Type player name';
+  autocomplete(input);
+  const removeBtn = document.createElement('button');
+  removeBtn.innerText = 'Remove';
+  removeBtn.onclick = () => row.remove();
+  row.appendChild(input);
+  row.appendChild(removeBtn);
+  container.appendChild(row);
+}
+
+// ANALYZE TRADE
+function analyzeTrade() {
+  let totalMy = 0, totalOpp = 0;
+  let missingPlayers = [];
+
+  document.querySelectorAll('#myTeamPlayers input').forEach(input => {
+    const val = input.value.trim();
+    if (playerValues[val] !== undefined) totalMy += playerValues[val];
+    else if(val) missingPlayers.push(val);
+  });
+
+  document.querySelectorAll('#opposingTeamPlayers input').forEach(input => {
+    const val = input.value.trim();
+    if (playerValues[val] !== undefined) totalOpp += playerValues[val];
+    else if(val) missingPlayers.push(val);
+  });
+
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = `My Team Total: ${totalMy}<br>Opposing Team Total: ${totalOpp}<br>`;
+
+  if(totalMy > totalOpp) {
+    resultDiv.innerHTML += `<div class="win">Click Accept ASAP!</div>
+    <img src="C:\\Users\\brend\\OneDrive\\Desktop\\Resume\\OIP.webp" alt="Click Accept">`;
+  } else if(totalMy < totalOpp) {
+    resultDiv.innerHTML += `<div class="loss">You're getting fleeced ❌</div>`;
+  } else {
+    resultDiv.innerHTML += `<div>Trade is roughly even.</div>`;
+  }
+
+  if (missingPlayers.length) resultDiv.innerHTML += `<br><i>Warning: These players are not in your rankings: ${missingPlayers.join(', ')}</i>`;
+}
+
+// Initialize one player each
+addPlayer('my');
+addPlayer('opp');
+</script>
+
+</body>
+</html>

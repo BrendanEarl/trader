@@ -117,7 +117,7 @@
 <div id="result"></div>
 
 <script>
-// PLAYER VALUES
+
 const playerValues = {
 "Bijan Robinson":99,"Ja’Marr Chase":100,"Justin Jefferson":98,"Saquon Barkley":97,"CeeDee Lamb":95,
 "Christian McCaffrey":94,"Jahmyr Gibbs":92,"Chase Brown":91,"Nico Collins":89,"Puka Nacua":88,
@@ -141,7 +141,7 @@ const playerValues = {
 "Austin Ekeler":1,"Tucker Kraft":1
 };
 
-// AUTOCOMPLETE FUNCTION
+
 function autocomplete(input) {
   let currentFocus;
   input.addEventListener("input", function() {
@@ -190,7 +190,7 @@ function autocomplete(input) {
   document.addEventListener("click", function(e) { closeAllLists(e.target); });
 }
 
-// ADD PLAYER ROW
+
 function addPlayer(team) {
   const container = document.getElementById(team === 'my' ? 'myTeamPlayers' : 'opposingTeamPlayers');
   const row = document.createElement('div');
@@ -207,7 +207,7 @@ function addPlayer(team) {
   container.appendChild(row);
 }
 
-// ANALYZE TRADE
+
 function analyzeTrade() {
   let totalMy = 0, totalOpp = 0;
   let missingPlayers = [];
@@ -239,7 +239,7 @@ function analyzeTrade() {
   if (missingPlayers.length) resultDiv.innerHTML += `<br><i>Warning: These players are not in your rankings: ${missingPlayers.join(', ')}</i>`;
 }
 
-// Initialize one player each
+
 addPlayer('my');
 addPlayer('opp');
 </script>

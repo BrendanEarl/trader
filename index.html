@@ -120,9 +120,9 @@
 
 const playerValues = {
 "Bijan Robinson":100,"Ja’Marr Chase":100,"Justin Jefferson":99,"Saquon Barkley":98,"CeeDee Lamb":99,
-"Christian McCaffrey":97,"Jahmyr Gibbs":97,"Chase Brown":94,"Nico Collins":94,"Puka Nacua":94,
-"Malik Nabers":94,"Jonathan Taylor":90,"Amon-Ra St. Brown":90,"Brock Bowers":91,"Drake London":90,
-"Ladd McConkey":88,"De’Von Achane":90,"A.J. Brown":87,"Brian Thomas Jr.":90,"Bucky Irving":85,
+"Christian McCaffrey":95,"Jahmyr Gibbs":94,"Chase Brown":92,"Nico Collins":90,"Puka Nacua":91,
+"Malik Nabers":90,"Jonathan Taylor":88,"Amon-Ra St. Brown":85,"Brock Bowers":91,"Drake London":90,
+"Ladd McConkey":85,"De’Von Achane":90,"A.J. Brown":85,"Brian Thomas Jr.":90,"Bucky Irving":85,
 "Trey McBride":90,"Davante Adams":85,"Josh Jacobs":84,"Xavier Worthy":66,"Jayden Daniels":80,
 "Kyren Williams":85,"Josh Allen":83,"Lamar Jackson":83,"Marvin Harrison Jr.":72,"Sam LaPorta":60,
 "Tyreek Hill":75,"Tee Higgins":78,"Jaxon Smith-Njigba":78,"Calvin Ridley":70,"Garrett Wilson":70,
@@ -238,9 +238,9 @@ function analyzeTrade() {
 
   const diff = totalMy - totalOpp;
 
-  if (Math.abs(diff) <= 10) {
-    resultDiv.innerHTML += `<div>Trade is fair! 🤝</div>`;
-  } else if(diff > 10) {
+  if (Math.abs(diff) <= 6) {
+    resultDiv.innerHTML += `<div>Trade is very close! Add a bench player and then go with your heart. 🤝</div>`;
+  } else if(diff > 6) {
     resultDiv.innerHTML += `<div class="win">Click Accept ASAP!</div>
    <img src="OIP.webp" alt="Click Accept">`;
   } else {

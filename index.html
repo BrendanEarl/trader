@@ -138,15 +138,16 @@ const playerValues = {
 "Michael Pittman Jr.":17,"Khalil Shakir":16,"Aaron Jones":25,"Jaylen Warren":35,"Joe Mixon":4,
 "Darnell Mooney":12,"Keon Coleman":16,"Deebo Samuel Sr.":15,"Dak Prescott":25,"Justin Fields":22,
 "Patrick Mahomes":20,"Kyler Murray":15,"Bo Nix":12,"Jordan Mason":12,"J.K. Dobbins":11,"Javonte Williams":11,
-"Austin Ekeler":19,"Tucker Kraft":15, "keenan allen":13, "jerome ford":13, "j.j. mccarthy":9, "luther burden":10, "jayden higgins":10, 
-  "wan'dale robinson":14, "christian kirk":13, "tetairoa mcmillan":75,   "dj moore":66, "dylan sampson":9, "justin herbert":3,
-  "rico dowdle":3, "zach charbonnet":13, "dont'e thorton":6, "brashard smith":5, "kareem hunt":4, "najee harris":10,
-  "rachaad white":3, "trey benson":12, "ollie gordon":12, "braelon allen":12, "colston loveland ":22, "mark andrews":18,
-  "nick chubb":23, "joe mixon":12, "travis ettiene":18, "tank bigsby":15, "romeo doubs":5, "kyle pitts":7, "brandon aiyuk":17,
-  "j.k. dobbins":40, "kyle williams":3,   "brock purdy":12, "jordan love":10, "dallas goedert":8, "evan engram":22, 
-  "cam skattebo":9, "xavier legette":15, "woody marks":5, "rashid shaheed":13, "chris rodriguez":12, "bill croskey-merritt":20,
-  "rhamondre stevenson":9, "ray davis":3,  "jalen coker":10,  "kenneth walker":65, "will shipley":3, "jayden reed":12, "pop douglas":7,
-  "quinshon judkins":18, "isaac teslaa":9, "marvin mims":12, "dameon pierce":7,    
+"Austin Ekeler":19,"Tucker Kraft":15, "Keenan Allen": 13, "Jerome Ford": 13, "J.J. McCarthy": 9, "Luther Burden": 10, "Jayden Higgins": 10,
+"Wan'Dale Robinson": 14, "Christian Kirk": 13, "Tetairoa McMillan": 75, "DJ Moore": 66, "Dylan Sampson": 9, "Justin Herbert": 3,
+"Rico Dowdle": 3, "Zach Charbonnet": 13, "Dont'e Thorton": 6, "Brashard Smith": 5, "Kareem Hunt": 4, "Najee Harris": 10,
+"Rachaad White": 3, "Trey Benson": 12, "Ollie Gordon": 12, "Braelon Allen": 12, "Colston Loveland": 22, "Mark Andrews": 18,
+"Nick Chubb": 23, "Joe Mixon": 12, "Travis Etienne": 18, "Tank Bigsby": 15, "Romeo Doubs": 5, "Kyle Pitts": 7, "Brandon Aiyuk": 17,
+"J.K. Dobbins": 40, "Kyle Williams": 3, "Brock Purdy": 12, "Jordan Love": 10, "Dallas Goedert": 8, "Evan Engram": 22,
+"Cam Skattebo": 9, "Xavier Legette": 15, "Woody Marks": 5, "Rashid Shaheed": 13, "Chris Rodriguez": 12, "Bill Croskey-Merritt": 20,
+"Rhamondre Stevenson": 9, "Ray Davis": 3, "Jalen Coker": 10, "Kenneth Walker": 65, "Will Shipley": 3, "Jayden Reed": 12, "Pop Douglas": 7,
+"Quinshon Judkins": 18, "Isaac Teslaa": 9, "Marvin Mims": 12, "Dameon Pierce": 7
+    
 }
 
 
@@ -235,17 +236,20 @@ function analyzeTrade() {
   const resultDiv = document.getElementById('result');
   resultDiv.innerHTML = `My Team Total: ${totalMy}<br>Opposing Team Total: ${totalOpp}<br>`;
 
-  if(totalMy > totalOpp) {
+  const diff = totalMy - totalOpp;
+
+  if (Math.abs(diff) <= 10) {
+    resultDiv.innerHTML += `<div>Trade is fair! 🤝</div>`;
+  } else if(diff > 10) {
     resultDiv.innerHTML += `<div class="win">Click Accept ASAP!</div>
    <img src="OIP.webp" alt="Click Accept">`;
-  } else if(totalMy < totalOpp) {
-    resultDiv.innerHTML += `<div class="loss">You're getting fleeced ❌</div>`;
   } else {
-    resultDiv.innerHTML += `<div>Trade is roughly even.</div>`;
+    resultDiv.innerHTML += `<div class="loss">You're getting fleeced ❌</div>`;
   }
 
   if (missingPlayers.length) resultDiv.innerHTML += `<br><i>Warning: These players are not in your rankings: ${missingPlayers.join(', ')}</i>`;
 }
+
 
 
 addPlayer('my');
